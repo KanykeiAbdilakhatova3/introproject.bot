@@ -4,9 +4,10 @@ from telebot import types
 
 bot = telebot.TeleBot('6837895288:AAF5f28qJwtBKkTGvzCIWyDDZY_jnW2cXBo')
 owner_chat_id = '820042687'
-
+# Начало,кнопка Start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+# Бот приветствует и вводится информация
     bot.reply_to(message, "Добро пожаловать! Для записи на курс подготовки к ОРТ, пожалуйста, укажите ваше ФИО:")
     bot.register_next_step_handler(message, process_name_step)
 
@@ -16,7 +17,7 @@ def process_name_step(message):
         name = message.text
 
         user_dict[chat_id] = {'name': name}
-
+ 
         msg = bot.send_message(chat_id, "Сколько вам лет?")
         bot.register_next_step_handler(msg, process_age_step)
 
@@ -54,10 +55,10 @@ def process_phone_step(message):
         chat_id = message.chat.id
         phone = message.text
 
-
+        # Проверкакорректности введенного номера телефона
         if phone.isdigit() and len(phone) == 10:
             user_dict[chat_id]['phone'] = phone
-
+        # Кнопка выбора языка
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
             markup.add(types.KeyboardButton('Русский'), types.KeyboardButton('Кыргызский'))
 
@@ -78,7 +79,7 @@ def process_language_step(message):
 
         user_dict[chat_id]['language'] = language
 
-
+        # Отправка информации о заявке себе 
         applicant_info = f"Заявка на курс подготовки к ОРТ:\n\n" \
                          f"ФИО: {user_dict[chat_id]['name']}\n" \
                          f"Возраст: {user_dict[chat_id]['age']}\n" \
@@ -99,6 +100,6 @@ if __name__ == '__main__':
         try:
             bot.polling(none_stop=True)
         except Exception as e:
-
+            # Обработка исключений для продолжения работы бота при ошибке
             print(f"Ошибка: {str(e)}")
             bot.stop_polling()
